@@ -11078,16 +11078,8 @@ const globalExport = {};
 
                                 else
                                     w.value = index;
-                            } else { //combo clicked 
-                                var text_values = values != values_list ? Object.values(values) : values;
-                                var menu = new LiteGraph.ContextMenu(text_values, {
-                                    scale: Math.max(1, this.ds.scale),
-                                    event: event,
-                                    className: "dark",
-                                    callback: inner_clicked.bind(w)
-                                },
-                                    ref_window);
-                                function inner_clicked(v, option, event) {
+                            } else { //combo clicked
+                                function inner_clicked(v) {
                                     if (values != values_list)
                                         v = text_values.indexOf(v);
                                     this.value = v;
@@ -11095,6 +11087,13 @@ const globalExport = {};
                                     that.dirty_canvas = true;
                                     return false;
                                 }
+                                const text_values = values != values_list ? Object.values(values) : values;
+                                this.showComboMenu(text_values, {
+                                    scale: Math.max(1, this.ds.scale),
+                                    event: event,
+                                    className: "dark",
+                                    callback: inner_clicked.bind(w)
+                                }, ref_window);
                             }
                         } //end mousedown
                         else if (event.type == LiteGraph.pointerevents_method + "up" && w.type == "number") {
@@ -11173,6 +11172,11 @@ const globalExport = {};
 
             return null;
         }
+
+        showComboMenu(text_values, options, window) {
+            new LiteGraph.ContextMenu(text_values, options, window);
+        }
+
         /**
          * draws every group area in the background
          * @method drawGroups

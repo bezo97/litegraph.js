@@ -1609,6 +1609,13 @@ export declare class LGraphCanvas {
     getExtraMenuOptions?(): ContextMenuItem[];
     /** Called when mouse right click */
     processContextMenu(node: LGraphNode, event: Event): void;
+    /** Custom combo menu implementation */
+    showComboMenu(text_values: string[], options: {
+        scale: number;
+        event: MouseEvent;
+        className: string;
+        callback: (v: string) => boolean;
+    }, window: Window): void;
 }
 
 export declare class ContextMenu {
