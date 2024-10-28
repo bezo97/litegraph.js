@@ -2060,6 +2060,7 @@ export class LGraphCanvas {
                         this.ctx.lineWidth = lineWidth
                     }
 
+                    // Groups
                     const group = this.graph.getGroupOnPos(e.canvasX, e.canvasY)
                     this.selected_group = group
                     if (group && !this.read_only) {
@@ -2067,8 +2068,7 @@ export class LGraphCanvas {
                             this.dragging_rectangle = null
                         }
 
-                        const dist = distance([e.canvasX, e.canvasY], [group.pos[0] + group.size[0], group.pos[1] + group.size[1]])
-                        if (dist * this.ds.scale < 10) {
+                        if (group.isInResize(e.canvasX, e.canvasY)) {
                             this.resizingGroup = group
                         } else {
                             const f = group.font_size || LiteGraph.DEFAULT_GROUP_FONT_SIZE
