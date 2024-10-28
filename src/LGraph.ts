@@ -846,9 +846,9 @@ export class LGraph {
      * Returns the top-most group in that position
      * @param x The x coordinate in canvas space
      * @param y The y coordinate in canvas space
-     * @return The group or null
+     * @return The group or undefined
      */
-    getGroupOnPos(x: number, y: number, { margin = 2 } = {}) {
+    getGroupOnPos(x: number, y: number, { margin = 2 } = {}): LGraphGroup | undefined {
         return this._groups.reverse().find(g => g.isPointInside(x, y, margin, /* skip_title */ true))
     }
 

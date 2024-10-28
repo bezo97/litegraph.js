@@ -2819,8 +2819,9 @@ export class LGraphCanvas {
                     e.canvasY,
                     this.visible_nodes
                 )
-
-                if (!node && e.click_time < 300) {
+                const group = this.graph.getGroupOnPos(e.canvasX, e.canvasY)
+                // Click on empty space or non-selectable elements should deselect everything.
+                if ((!node && !group) && e.click_time < 300) {
                     this.deselectAllNodes()
                 }
 
