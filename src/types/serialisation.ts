@@ -48,7 +48,6 @@ export type ISerialisedGraph<
 > = {
     last_node_id: LGraph["last_node_id"]
     last_link_id: LGraph["last_link_id"]
-    last_reroute_id?: LGraph["last_reroute_id"]
     nodes: TNode[]
     links: TLink[]
     groups: TGroup[]

@@ -14,6 +14,13 @@ interface IGraphInput {
     value?: unknown
 }
 
+export interface LGraphState {
+    lastGroupId: number
+    lastNodeId: number
+    lastLinkId: number
+    lastRerouteId: number
+}
+
 type ParamsArray<T extends Record<any, any>, K extends MethodNames<T>> = Parameters<T[K]>[1] extends undefined ? Parameters<T[K]> | Parameters<T[K]>[0] : Parameters<T[K]>
 
 /**
@@ -47,11 +54,9 @@ export class LGraph {
     links: Map<LinkId, LLink> & Record<LinkId, LLink>
     list_of_graphcanvas: LGraphCanvas[] | null
     status: number
-    last_node_id: number
-    last_link_id: number
-    /** The largest ID created by this graph */
-    last_reroute_id: number
-    lastGroupId: number = -1
+
+    state: LGraphState
+
     _nodes: LGraphNode[]
     _nodes_by_id: Record<NodeId, LGraphNode>
     _nodes_in_order: LGraphNode[]
@@ -80,6 +85,22 @@ export class LGraph {
     extra: Record<any, any>
     inputs: Dictionary<IGraphInput>
     outputs: Dictionary<IGraphInput>
+
+    /** @deprecated See {@link state}.{@link LGraphState.lastNodeId lastNodeId} */
+    get last_node_id() {
+        return this.state.lastNodeId
+    }
+    set last_node_id(value) {
+        this.state.lastNodeId = value
+    }
+    /** @deprecated See {@link state}.{@link LGraphState.lastLinkId lastLinkId} */
+    get last_link_id() {
+        return this.state.lastLinkId
+    }
+    set last_link_id(value) {
+        this.state.lastLinkId = value
+    }
+
     onInputsOutputsChange?(): void
     onInputAdded?(name: string, type: string): void
     onAfterStep?(): void
@@ -141,8 +162,12 @@ export class LGraph {
         this.stop()
         this.status = LGraph.STATUS_STOPPED
 
-        this.last_node_id = 0
-        this.last_link_id = 0
+        this.state = {
+            lastGroupId: 0,
+            lastNodeId: 0,
+            lastLinkId: 0,
+            lastRerouteId: 0
+        }
 
         this._version = -1 //used to detect changes
 
@@ -654,13 +679,14 @@ export class LGraph {
      */
     add(node: LGraphNode | LGraphGroup, skip_compute_order?: boolean): LGraphNode | null | undefined {
         if (!node) return
+        const { state } = this
 
         // LEGACY: This was changed from constructor === LGraphGroup
         //groups
         if (node instanceof LGraphGroup) {
             // Assign group ID
-            if (node.id == null || node.id === -1) node.id = ++this.lastGroupId
-            if (node.id > this.lastGroupId) this.lastGroupId = node.id
+            if (node.id == null || node.id === -1) node.id = ++state.lastGroupId
+            if (node.id > state.lastGroupId) state.lastGroupId = node.id
 
             this._groups.push(node)
             this.setDirtyCanvas(true)
@@ -677,7 +703,7 @@ export class LGraph {
             )
             node.id = LiteGraph.use_uuids
                 ? LiteGraph.uuidv4()
-                : ++this.last_node_id
+                : ++state.lastNodeId
         }
 
         if (this._nodes.length >= LiteGraph.MAX_NUMBER_OF_NODES) {
@@ -691,9 +717,9 @@ export class LGraph {
         }
         else {
             if (node.id == null || node.id == -1) {
-                node.id = ++this.last_node_id
-            } else if (typeof node.id === "number" && this.last_node_id < node.id) {
-                this.last_node_id = node.id
+                node.id = ++state.lastNodeId
+            } else if (typeof node.id === "number" && state.lastNodeId < node.id) {
+                state.lastNodeId = node.id
             }
         }
 
@@ -1211,8 +1237,8 @@ export class LGraph {
         }
 
         const data: ISerialisedGraph = {
-            last_node_id: this.last_node_id,
-            last_link_id: this.last_link_id,
+            last_node_id: this.state.lastNodeId,
+            last_link_id: this.state.lastLinkId,
             nodes: nodes_info,
             links: links,
             groups: groups_info,
