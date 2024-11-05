@@ -1,6 +1,6 @@
 import type { Dictionary, IContextMenuValue, ISlotType, MethodNames, Point } from "./interfaces"
 import type { ISerialisedGraph } from "./types/serialisation"
-import { LGraphEventMode, TitleMode } from "./types/globalEnums"
+import { LGraphEventMode } from "./types/globalEnums"
 import { LiteGraph } from "./litegraph"
 import { LGraphCanvas } from "./LGraphCanvas"
 import { LGraphGroup } from "./LGraphGroup"
