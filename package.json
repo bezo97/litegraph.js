@@ -25,11 +25,7 @@
     "preview": "vite preview",
     "watch": "vite build --watch",
     "release": "node scripts/release.js",
-    "test": "vitest",
-    "deprecated-test:allVersions": "./utils/test.sh",
-    "deprecated-prettier": "npx prettier --write src/**/*.* css/**/*.*",
-    "deprecated-lint": "npx eslint src",
-    "deprecated-lint:fix": "npx eslint --fix src"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
