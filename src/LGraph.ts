@@ -1295,6 +1295,15 @@ export class LGraph implements Serialisable<SerialisableGraph> {
         } else {
             // New schema - one version so far, no check required.
 
+            // State
+            if (data.state) {
+                const { state: { lastGroupId, lastLinkId, lastNodeId, lastRerouteId } } = data
+                if (lastGroupId != null) this.state.lastGroupId = lastGroupId
+                if (lastLinkId != null) this.state.lastLinkId = lastLinkId
+                if (lastNodeId != null) this.state.lastNodeId = lastNodeId
+                if (lastRerouteId != null) this.state.lastRerouteId = lastRerouteId
+            }
+
             // Links
             if (Array.isArray(data.links)) {
                 for (const linkData of data.links) {
@@ -1309,7 +1318,7 @@ export class LGraph implements Serialisable<SerialisableGraph> {
         //copy all stored fields
         for (const i in data) {
             //links must be accepted
-            if (i == "nodes" || i == "groups" || i == "links")
+            if (i == "nodes" || i == "groups" || i == "links" || i === "state")
                 continue
             this[i] = data[i]
         }
