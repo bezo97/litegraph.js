@@ -7839,17 +7839,20 @@ export class LGraphCanvas {
     }
 
     /**
-     * Centers the camera on a given node (animated version)
-     * @method animateToNode
-     **/
-    animateToNode(
-        node: LGraphNode,
+     * Starts an animation to fit the view around the specified selection of nodes.
+     * @param nodes List of nodes to fit the view around.
+     * @param animationParameters Various parameters for the camera movement animation.
+     */
+    animateToNodes(
+        nodes: LGraphNode[],
         {
             duration = 350,
             zoom = 0.75,
             easing = EaseFunction.EASE_IN_OUT_QUAD
         }: {
+            /** Duration of the animation in milliseconds. */
             duration?: number,
+            /** Relative target zoom level. 1 means the view is fit exactly on the bounding box. */
             zoom?: number,
             easing?: EaseFunction
         } = {}
@@ -7872,33 +7875,43 @@ export class LGraphCanvas {
         let targetScale = startScale
         let targetX = startX
         let targetY = startY
+
+        // Find bounding box around nodes
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        nodes.forEach(node => {
+          minX = Math.min(minX, node.pos[0])
+          minY = Math.min(minY, node.pos[1])
+          maxX = Math.max(maxX, node.pos[0] + node.size[0])
+          maxY = Math.max(maxY, node.pos[1] + node.size[1])
+        });
+        const boundingBoxWidth = maxX - minX
+        const boundingBoxHeight = maxY - minY
+        
         if (zoom > 0) {
-            const targetScaleX = (zoom * cw) / Math.max(node.size[0], 300)
-            const targetScaleY = (zoom * ch) / Math.max(node.size[1], 300)
+            const targetScaleX = (zoom * cw) / Math.max(boundingBoxWidth, 300)
+            const targetScaleY = (zoom * ch) / Math.max(boundingBoxHeight, 300)
 
             // Choose the smaller scale to ensure the node fits into the viewport
             // Ensure we don't go over the max scale
             targetScale = Math.min(targetScaleX, targetScaleY, this.ds.max_scale)
-            targetX = -node.pos[0] - node.size[0] * 0.5 + (cw * 0.5) / targetScale
-            targetY = -node.pos[1] - node.size[1] * 0.5 + (ch * 0.5) / targetScale
-        } else {
-            targetX = -node.pos[0] - node.size[0] * 0.5 + (cw * 0.5) / targetScale
-            targetY = -node.pos[1] - node.size[1] * 0.5 + (ch * 0.5) / targetScale
         }
+        targetX = -minX - boundingBoxWidth * 0.5 + (cw * 0.5) / targetScale
+        targetY = -minY - boundingBoxHeight * 0.5 + (ch * 0.5) / targetScale
+        
         const animate = (timestamp: number) => {
             const elapsed = timestamp - startTimestamp
             const progress = Math.min(elapsed / duration, 1)
             const easedProgress = easeFunction(progress)
-
+        
             this.ds.offset[0] = startX + (targetX - startX) * easedProgress
             this.ds.offset[1] = startY + (targetY - startY) * easedProgress
-
+            
             if (zoom > 0) {
-                this.ds.scale = startScale + (targetScale - startScale) * easedProgress
+              this.ds.scale = startScale + (targetScale - startScale) * easedProgress
             }
-
+        
             this.setDirty(true, true)
-
+        
             if (progress < 1) {
                 animationId = requestAnimationFrame(animate)
             } else {
