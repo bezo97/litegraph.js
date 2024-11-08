@@ -7889,7 +7889,8 @@ export class LGraphCanvas {
         const animate = (timestamp: number) => {
             const elapsed = timestamp - startTimestamp
             const progress = Math.min(elapsed / duration, 1)
-            const easedProgress = easeFunction(progress)        
+            const easedProgress = easeFunction(progress)
+
             this.ds.offset[0] = startX + (targetX - startX) * easedProgress
             this.ds.offset[1] = startY + (targetY - startY) * easedProgress
 
