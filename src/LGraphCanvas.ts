@@ -7874,7 +7874,6 @@ export class LGraphCanvas {
         let targetScale = startScale
         let targetX = startX
         let targetY = startY
-        
         if (zoom > 0) {
             const targetScaleX = (zoom * cw) / Math.max(bounds[2], 300)
             const targetScaleY = (zoom * ch) / Math.max(bounds[3], 300)
