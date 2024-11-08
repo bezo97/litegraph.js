@@ -7874,6 +7874,7 @@ export class LGraphCanvas {
         let targetScale = startScale
         let targetX = startX
         let targetY = startY
+
         if (zoom > 0) {
             const targetScaleX = (zoom * cw) / Math.max(bounds[2], 300)
             const targetScaleY = (zoom * ch) / Math.max(bounds[3], 300)
@@ -7891,10 +7892,13 @@ export class LGraphCanvas {
             const easedProgress = easeFunction(progress)        
             this.ds.offset[0] = startX + (targetX - startX) * easedProgress
             this.ds.offset[1] = startY + (targetY - startY) * easedProgress
+
             if (zoom > 0) {
                 this.ds.scale = startScale + (targetScale - startScale) * easedProgress
             }
+
             this.setDirty(true, true)
+
             if (progress < 1) {
                 animationId = requestAnimationFrame(animate)
             } else {
